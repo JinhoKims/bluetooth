@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1050329741516",
+    "firebase_url": "https://logstore-74616.firebaseio.com",
+    "project_id": "logstore-74616",
+    "storage_bucket": "logstore-74616.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050329741516:android:23c02e78c0c26fa117aa69",
+        "android_client_info": {
+          "package_name": "com.example.bluetooth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1050329741516-p9cqukbp5rtunit1j8d62ijm11n44pmm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAY9vOUkZVQDseciSqKRfE94VwL6H9IK2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1050329741516-p9cqukbp5rtunit1j8d62ijm11n44pmm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
