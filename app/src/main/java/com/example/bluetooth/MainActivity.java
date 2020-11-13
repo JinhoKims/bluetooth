@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
     public class Claim { // 문의사항 클래스
         public String clam_title;
         public String clam_contents;
+        public String clam_station;
         public Info user_info;
 
         public Claim() {}
@@ -172,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         public Claim(String title, String contents){
             this.clam_title=title;
             this.clam_contents=contents;
+            this.clam_station="가상역";
             user_info = new Info("claim","claim");
         }
 
@@ -254,11 +256,12 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     /* 수신된 데이터를 바이트(char) 단위로 분해하여 각각의 TextView 로 적재시킨다. */
-                    mTvReceiveData.setText(String.valueOf(readMessage.charAt(0))+String.valueOf(readMessage.charAt(1)));
-                    mTvReceiveData2.setText(String.valueOf(readMessage.charAt(2)));
-                    mTvReceiveData3.setText(String.valueOf(readMessage.charAt(3)));
-                    mTvReceiveData4.setText(String.valueOf(readMessage.charAt(4)));
-                    mTvReceiveData5.setText(String.valueOf(readMessage.charAt(5)));
+
+                    mTvReceiveData.setText(String.valueOf(readMessage.charAt(0))+String.valueOf(readMessage.charAt(1))+String.valueOf(readMessage.charAt(2)));
+                    mTvReceiveData2.setText(String.valueOf(readMessage.charAt(3)));
+                    mTvReceiveData3.setText(String.valueOf(readMessage.charAt(4)));
+                    mTvReceiveData4.setText(String.valueOf(readMessage.charAt(5)));
+                    mTvReceiveData5.setText(String.valueOf(readMessage.charAt(6)));
 
                 }
             }
