@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,11 +50,16 @@ public class MainActivity extends AppCompatActivity {
     TextView mTvReceiveData4;
     TextView mTvReceiveData5;
     TextView mTvSendData;
+    TextView mTvPercent;
     Button mBtnBluetoothOn;
     Button mBtnBluetoothOff;
     Button mBtnConnect;
     Button mBtnSendData;
     Button mBtnTransData;
+    ImageView mImgSeat1;
+    ImageView mImgSeat2;
+    ImageView mImgSeat3;
+    ImageView mImgSeat4;
 
     BluetoothAdapter mBluetoothAdapter;
     Set<BluetoothDevice> mPairedDevices;
@@ -72,18 +79,11 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference seatRef = mRootRef.child("좌석 상태"); // 컬럼(속성)명 선정
     DatabaseReference claimRef = mRootRef.child("문의 내역"); // 컬럼(속성)명 선정
 
+    int percent;
+    int per1, per2, per3;
 
 
-    public void checkPermission(){ // 전화번호 권한 요청 모듈
-        //권한 허용 여부를 확인한다.
-        int chk = checkCallingOrSelfPermission(Manifest.permission.READ_PHONE_STATE);
-        String [] req = {Manifest.permission.READ_PHONE_STATE};
 
-        if(chk == PackageManager.PERMISSION_DENIED){
-            //권한 허용을여부를 확인하는 창을 띄운다
-            requestPermissions(req,0);
-        }
-    }
 
     @IgnoreExtraProperties
     public class Info { // 시간 및 전화번호
@@ -132,17 +132,17 @@ public class MainActivity extends AppCompatActivity {
     @IgnoreExtraProperties
     public class Seat { // 혼잡도 및 좌석 정보 클래스
 
-        public String st_congestion; // 혼잡도
-        public String st_seetStat; // 좌석 상황
+        public int st_congestion; // 혼잡도
+        public int st_emptySeat; // 좌석 상황
         public String date;
 
         public Seat() {
             // Default constructor required for calls to DataSnapshot.getValue(User.class)
         }
 
-        public Seat(String congestion, String seetStat) {
+        public Seat(int congestion, int seetStat) {
             this.st_congestion = congestion;
-            this.st_seetStat = seetStat;
+            this.st_emptySeat = seetStat;
             this.date = getDate();
         }
 
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         mBtnTransData.setOnClickListener(new View.OnClickListener() { // 전송 버튼을 누를 때
             @Override
             public void onClick(View v) {
-                Seat userSeat = new Seat(mTvReceiveData.getText().toString(), mTvReceiveData2.getText().toString()); // 좌석 정보 받기
+                Seat userSeat = new Seat(percent, 0); // 좌석 정보 받기
                 Claim userClaim = new Claim("문의 내역 제목", "문의 내역 내용"); // 문의 내역 받기
 
                 seatRef.push().setValue(userSeat); // 좌석 정보 전송
@@ -206,12 +206,17 @@ public class MainActivity extends AppCompatActivity {
         mTvReceiveData3 = (TextView)findViewById(R.id.tvReceiveData3);
         mTvReceiveData4 = (TextView)findViewById(R.id.tvReceiveData4);
         mTvReceiveData5 = (TextView)findViewById(R.id.tvReceiveData5);
+        mTvPercent = (TextView)findViewById(R.id.tvCongestion);
         mTvSendData =  (EditText) findViewById(R.id.tvSendData);
         mBtnBluetoothOn = (Button)findViewById(R.id.btnBluetoothOn);
         mBtnBluetoothOff = (Button)findViewById(R.id.btnBluetoothOff);
         mBtnConnect = (Button)findViewById(R.id.btnConnect);
         mBtnSendData = (Button)findViewById(R.id.btnSendData);
         mBtnTransData = (Button)findViewById(R.id.btnTransData);
+        mImgSeat1 = (ImageView)findViewById(R.id.imgSeat1);
+        mImgSeat2 = (ImageView)findViewById(R.id.imgSeat2);
+        mImgSeat3 = (ImageView)findViewById(R.id.imgSeat3);
+        mImgSeat4 = (ImageView)findViewById(R.id.imgSeat4);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -245,23 +250,36 @@ public class MainActivity extends AppCompatActivity {
         });
         mBluetoothHandler = new Handler(){
             public void handleMessage(android.os.Message msg){
-                if(msg.what == BT_MESSAGE_READ){
+                if(msg.what == BT_MESSAGE_READ) {
                     String readMessage = null;
                     try {
                         readMessage = new String((byte[]) msg.obj, "UTF-8"); // 수신된 데이터를 string으로 변환
-
 
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
 
-                    /* 수신된 데이터를 바이트(char) 단위로 분해하여 각각의 TextView 로 적재시킨다. */
+                    // 수신된 데이터를 바이트(char) 단위로 분해하여 각각의 View 로 적재시킨다.
+                    percent = ((readMessage.charAt(0) - '0') * 100) + ((readMessage.charAt(1) - '0') * 10) + (readMessage.charAt(2) - '0');
 
-                    mTvReceiveData.setText(String.valueOf(readMessage.charAt(0))+String.valueOf(readMessage.charAt(1))+String.valueOf(readMessage.charAt(2)));
-                    mTvReceiveData2.setText(String.valueOf(readMessage.charAt(3)));
-                    mTvReceiveData3.setText(String.valueOf(readMessage.charAt(4)));
-                    mTvReceiveData4.setText(String.valueOf(readMessage.charAt(5)));
-                    mTvReceiveData5.setText(String.valueOf(readMessage.charAt(6)));
+                    // 혼잡도 색상 설정
+                    if (percent >= 50) {
+                        if (percent >= 100)
+                            mTvPercent.setTextColor(Color.RED);
+                        else
+                            mTvPercent.setTextColor(Color.YELLOW);
+                    } else {
+                        mTvPercent.setTextColor(Color.GREEN);
+                    }
+
+                    mTvPercent.setText(Integer.toString(percent) + '%');
+                    mImgSeat1.setColorFilter(Color.parseColor((readMessage.charAt(3) - '0' > 0) ? "#990000" : "#009900"));
+                    mImgSeat2.setColorFilter(Color.parseColor((readMessage.charAt(4) - '0' > 0) ? "#990000" : "#009900"));
+                    mImgSeat3.setColorFilter(Color.parseColor((readMessage.charAt(5) - '0' > 0) ? "#990000" : "#009900"));
+                    mImgSeat4.setColorFilter(Color.parseColor((readMessage.charAt(6) - '0' > 0) ? "#990000" : "#009900"));
+
+                    Seat userSeat = new Seat(percent, 4-((readMessage.charAt(3) - '0')+(readMessage.charAt(4) - '0')+(readMessage.charAt(5) - '0')+(readMessage.charAt(6) - '0'))); // 빈 좌석 계산
+                    seatRef.setValue(userSeat); // 좌석 정보 전송
 
                 }
             }
@@ -270,6 +288,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     /* 아래는 블루투스 구현 코드 */
+    public void checkPermission(){ // 전화번호 권한 요청 모듈
+        //권한 허용 여부를 확인한다.
+        int chk = checkCallingOrSelfPermission(Manifest.permission.READ_PHONE_STATE);
+        String [] req = {Manifest.permission.READ_PHONE_STATE};
+
+        if(chk == PackageManager.PERMISSION_DENIED){
+            //권한 허용을여부를 확인하는 창을 띄운다
+            requestPermissions(req,0);
+        }
+    }
     void bluetoothOn() {
         if(mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_LONG).show();
