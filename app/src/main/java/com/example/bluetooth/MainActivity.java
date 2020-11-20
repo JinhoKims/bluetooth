@@ -244,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     editTitle.setHint("제목을 입력하세요.");
                 EditText editComment = new EditText(MainActivity.this);
                     editComment.setHint("내용을 입력하세요.");
+                    editComment.setLines(5);
                 LinearLayout layout = new LinearLayout(MainActivity.this);
                     layout.setOrientation(LinearLayout.VERTICAL);
                 layout.addView(editTitle);
@@ -251,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
 
-                builder.setTitle("신고 사항");
+                builder.setTitle("민원 신고");
                 builder.setView(layout);
                 builder.setPositiveButton("전송",
                         new DialogInterface.OnClickListener() {
