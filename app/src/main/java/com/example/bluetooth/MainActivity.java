@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.logging.AndroidLogger;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -80,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference claimRef = mRootRef.child("문의 내역"); // 컬럼(속성)명 선정
 
     int percent;
-
-
 
     @IgnoreExtraProperties
     public class Info { // 시간 및 전화번호
@@ -161,17 +161,17 @@ public class MainActivity extends AppCompatActivity {
 
     @IgnoreExtraProperties
     public class Claim { // 문의사항 클래스
-        public String clam_title;
-        public String clam_contents;
-        public String clam_station;
+        public String clam_1title;
+        public String clam_2contents;
+        public String clam_3station;
         public Info user_info;
 
         public Claim() {}
 
         public Claim(String title, String contents){
-            this.clam_title=title;
-            this.clam_contents=contents;
-            this.clam_station="역이름";
+            this.clam_1title=title;
+            this.clam_2contents=contents;
+            this.clam_3station="역이름";
             user_info = new Info("claim","claim");
         }
 
@@ -181,13 +181,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mBtnTransData.setOnClickListener(new View.OnClickListener() { // 전송하기 버튼을 누를 때
-            @Override
-            public void onClick(View v) {
-                Claim userClaim = new Claim("문의 내역 제목", "문의 내역 내용"); // 문의 내역 받기
-                claimRef.push().setValue(userClaim); // 문의 내역 전송
-            }
-        }); // 파이어베이스 전송 모듈
+
     }
 
     @Override
@@ -243,6 +237,39 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        mBtnTransData.setOnClickListener(new View.OnClickListener() { // 전송하기 버튼을 누를 때
+            @Override
+            public void onClick(View v) {
+                EditText editTitle = new EditText(MainActivity.this);
+                    editTitle.setHint("제목을 입력하세요.");
+                EditText editComment = new EditText(MainActivity.this);
+                    editComment.setHint("내용을 입력하세요.");
+                LinearLayout layout = new LinearLayout(MainActivity.this);
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                layout.addView(editTitle);
+                layout.addView(editComment);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+
+                builder.setTitle("신고 사항");
+                builder.setView(layout);
+                builder.setPositiveButton("전송",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Claim userClaim = new Claim(editTitle.getText().toString(), editComment.getText().toString()); // 문의 내역 받기
+                                claimRef.push().setValue(userClaim); // 문의 내역 전송
+                                Toast.makeText(getApplicationContext(),"전송하였습니다." ,Toast.LENGTH_LONG).show();
+                            }
+                        });
+                builder.setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getApplicationContext(),"취소하였습니다." ,Toast.LENGTH_LONG).show();
+                            }
+                        });
+                builder.show();
+            }
+        }); // 파이어베이스 전송 모듈
         mBluetoothHandler = new Handler(){
             public void handleMessage(android.os.Message msg){
                 if(msg.what == BT_MESSAGE_READ) {
