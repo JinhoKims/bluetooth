@@ -80,8 +80,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference claimRef = mRootRef.child("문의 내역"); // 컬럼(속성)명 선정
 
     int percent;
-    int per1, per2, per3;
-
 
 
 
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         public Claim(String title, String contents){
             this.clam_title=title;
             this.clam_contents=contents;
-            this.clam_station="가상역";
+            this.clam_station="역이름";
             user_info = new Info("claim","claim");
         }
 
@@ -183,13 +181,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mBtnTransData.setOnClickListener(new View.OnClickListener() { // 전송 버튼을 누를 때
+        mBtnTransData.setOnClickListener(new View.OnClickListener() { // 전송하기 버튼을 누를 때
             @Override
             public void onClick(View v) {
-                Seat userSeat = new Seat(percent, 0); // 좌석 정보 받기
                 Claim userClaim = new Claim("문의 내역 제목", "문의 내역 내용"); // 문의 내역 받기
-
-                seatRef.push().setValue(userSeat); // 좌석 정보 전송
                 claimRef.push().setValue(userClaim); // 문의 내역 전송
             }
         }); // 파이어베이스 전송 모듈
