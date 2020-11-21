@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         public Claim(String title, String contents){
             this.clam_1title=title;
             this.clam_2contents=contents;
-            this.clam_3station="역이름";
+            this.clam_3station="남산역";
             user_info = new Info("claim","claim");
         }
 

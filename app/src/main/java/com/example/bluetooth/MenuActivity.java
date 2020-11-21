@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MenuActivity extends AppCompatActivity {
-    static final String[] LIST_MENU = {"LIST1", "LIST2", "LIST3"} ;
+    static final String[] LIST_MENU = {"   1호선", "   2호선", "   3호선"} ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,7 @@ public class MenuActivity extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-                String strText = (String) parent.getItemAtPosition(position) ;
+                String strText = (String) parent.getItemAtPosition(position);
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
